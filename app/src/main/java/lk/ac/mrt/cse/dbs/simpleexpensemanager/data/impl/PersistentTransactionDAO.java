@@ -51,14 +51,16 @@ public class PersistentTransactionDAO implements TransactionDAO {
                 TABLE_TRANSACTION,
                 new String[]{COl_DATE, COL_ACCNO, COL_EXPENSETYPE, COL_AMOUNT}, null, null, null, null, null
         );
-        while(cursor.moveToNext()){
-            String dateString = cursor.getString(cursor.getColumnIndex(COl_DATE));
-            Date date = new SimpleDateFormat("dd-MM-yyyy").parse(dateString);
-            String account = cursor.getString(cursor.getColumnIndex(COL_ACCNO));
-            ExpenseType expenseType = ExpenseType.valueOf(cursor.getString(cursor.getColumnIndex(COL_EXPENSETYPE)));
-            double amount = cursor.getDouble(cursor.getColumnIndex(COL_AMOUNT));
-            Transaction newTransaction = new Transaction(date,account,expenseType,amount);
-            transactionsList.add(newTransaction);
+        if(cursor.moveToFirst()) {
+             do {
+                String dateString = cursor.getString(cursor.getColumnIndex(COl_DATE));
+                Date date = new SimpleDateFormat("dd-MM-yyyy").parse(dateString);
+                String account = cursor.getString(cursor.getColumnIndex(COL_ACCNO));
+                ExpenseType expenseType = ExpenseType.valueOf(cursor.getString(cursor.getColumnIndex(COL_EXPENSETYPE)));
+                double amount = cursor.getDouble(cursor.getColumnIndex(COL_AMOUNT));
+                Transaction newTransaction = new Transaction(date, account, expenseType, amount);
+                transactionsList.add(newTransaction);
+            }while (cursor.moveToNext());
         }
         cursor.close();
         return transactionsList;
@@ -73,14 +75,16 @@ public class PersistentTransactionDAO implements TransactionDAO {
                 new String[]{COl_DATE, COL_ACCNO, COL_EXPENSETYPE, COL_AMOUNT}, null, null, null, null, null
         );
         int size = cursor.getCount();
-        while(cursor.moveToNext()){
-            String dateString = cursor.getString(cursor.getColumnIndex(COl_DATE));
-            Date date = new SimpleDateFormat("dd-MM-yyyy").parse(dateString);
-            String account = cursor.getString(cursor.getColumnIndex(COL_ACCNO));
-            ExpenseType expense = ExpenseType.valueOf(cursor.getString(cursor.getColumnIndex(COL_EXPENSETYPE)));
-            double amount = cursor.getDouble(cursor.getColumnIndex(COL_AMOUNT));
-            Transaction newTransaction = new Transaction(date,account,expense,amount);
-            transactionsList.add(newTransaction);
+        if(cursor.moveToFirst()){
+            do {
+                String dateString = cursor.getString(cursor.getColumnIndex(COl_DATE));
+                Date date = new SimpleDateFormat("dd-MM-yyyy").parse(dateString);
+                String account = cursor.getString(cursor.getColumnIndex(COL_ACCNO));
+                ExpenseType expense = ExpenseType.valueOf(cursor.getString(cursor.getColumnIndex(COL_EXPENSETYPE)));
+                double amount = cursor.getDouble(cursor.getColumnIndex(COL_AMOUNT));
+                Transaction newTransaction = new Transaction(date, account, expense, amount);
+                transactionsList.add(newTransaction);
+            }while(cursor.moveToNext());
         }
         if(size<=limit){
             return transactionsList;

@@ -64,9 +64,11 @@ public class PersistentAccountDAO implements AccountDAO {
                 new String[]{COL_ACCNO}, null, null, null, null, null
         );
 
-        while(cursor.moveToNext()) {
-            String accountNum = cursor.getString(cursor.getColumnIndexOrThrow(COL_ACCNO));
-            accountNumbersList.add(accountNum);
+        if(cursor.moveToFirst()) {
+            do {
+                String accountNum = cursor.getString(cursor.getColumnIndexOrThrow(COL_ACCNO));
+                accountNumbersList.add(accountNum);
+            } while (cursor.moveToNext());
         }
         cursor.close();
         return accountNumbersList;
@@ -80,14 +82,15 @@ public class PersistentAccountDAO implements AccountDAO {
                 TABLE_ACCOUNT,
                 new String[]{COL_ACCNO, COL_BANKNAME, COL_ACCHOLDERNAME, COL_BALANCE}, null, null, null, null, null
         );
-
-        while(cursor.moveToNext()) {
-            String accountNum = cursor.getString(cursor.getColumnIndex(COL_ACCNO));
-            String bankName = cursor.getString(cursor.getColumnIndex(COL_BANKNAME));
-            String holdersName = cursor.getString(cursor.getColumnIndex(COL_ACCHOLDERNAME));
-            double initialBalance = cursor.getDouble(cursor.getColumnIndex(COL_BALANCE));
-            Account account = new Account(accountNum,bankName,holdersName,initialBalance);
-            accountsList.add(account);
+        if(cursor.moveToFirst()){
+            do {
+                String accountNum = cursor.getString(cursor.getColumnIndex(COL_ACCNO));
+                String bankName = cursor.getString(cursor.getColumnIndex(COL_BANKNAME));
+                String holdersName = cursor.getString(cursor.getColumnIndex(COL_ACCHOLDERNAME));
+                double initialBalance = cursor.getDouble(cursor.getColumnIndex(COL_BALANCE));
+                Account account = new Account(accountNum,bankName,holdersName,initialBalance);
+                accountsList.add(account);
+            }while(cursor.moveToNext());
         }
         cursor.close();
         return accountsList;
@@ -108,7 +111,6 @@ public class PersistentAccountDAO implements AccountDAO {
         contentValues.put(COL_BANKNAME,account.getBankName());
         contentValues.put(COL_ACCHOLDERNAME,account.getAccountHolderName());
         contentValues.put(COL_BALANCE,account.getBalance());
-        //inserting
         db.insert(TABLE_ACCOUNT,null,contentValues);
         db.close();
     }
